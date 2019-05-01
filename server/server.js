@@ -1,12 +1,14 @@
-var http = require('http');
+var path = require('path')
+var express = require('express');
+var app = express();
 
-function onRequest(request, response) {
-    response.writeHead(200, {'Content-Type': 'text/plain'});
-    response.write('HELLO');
-    response.end();
+app.use(express.static('templates'));
+app.use(express.static('static'));
 
-    
-}
+app.get('/', (req, res) => {
+    res.sendFile(__dirname + "/templates/chatpage.html");
+})
 
-// listen on port 8000
-http.createServer(onRequest).listen(8000);
+var server = app.listen(8000, () => {
+    console.log('server listening at ' + server.address().port);
+})
