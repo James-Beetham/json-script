@@ -138,33 +138,34 @@ function parseLine(env, rules, scope, str) {
 /**
  * returns parse tree
  */
-// function parseExpr(rules, str) {
-//     if (typeof(str) == "string") str = [str];
-//     if (str.length == 0 || rules.length == 0) return str;
-//     // TODO group strings (match quotes)
-//     var v, arr = [], q, rule = rules.pop();
-//     for (var v of str) {
-//         var tmp = v.split(rule.k);
-//         // console.log("\tlength start: " + tmp.length + ", " + JSON.stringify(tmp));
-//         for (var q = 0; q < tmp.length; q++) {
-//             tmp[q] = tmp[q].trim();
-//             if (tmp[q].length == 0) { tmp.splice(q, 1); q--; }
-//         }
-//         arr.push(tmp);
-//     }
-//     // console.log("length: " + arr.length + JSON.stringify(tmp));
-//     var ret = [];
-//     for (var i = 0; i < arr.length; i++) {
-//         var tmp = parseExpr(rules, arr[i]);
-//         ret.push(tmp.length == 1 ? tmp[0] : tmp);
-//     }
-//     if (ret.length == 1) { ret = ret[0];
-//         if (ret.length != 1) ret.splice(0, 0, rule.k);
-//     }
-//     rules.push(rule);
-//     return ret;
-// }
+ function parseExpr(rules, str) {
+     if (typeof(str) == "string") str = [str];
+     if (str.length == 0 || rules.length == 0) return str;
+     // TODO group strings (match quotes)
+     var v, arr = [], q, rule = rules.pop();
+     for (var v of str) {
+         var tmp = v.split(rule.k);
+         // console.log("\tlength start: " + tmp.length + ", " + JSON.stringify(tmp));
+         for (var q = 0; q < tmp.length; q++) {
+             tmp[q] = tmp[q].trim();
+             if (tmp[q].length == 0) { tmp.splice(q, 1); q--; }
+         }
+         arr.push(tmp);
+     }
+     // console.log("length: " + arr.length + JSON.stringify(tmp));
+     var ret = [];
+     for (var i = 0; i < arr.length; i++) {
+         var tmp = parseExpr(rules, arr[i]);
+         ret.push(tmp.length == 1 ? tmp[0] : tmp);
+     }
+     if (ret.length == 1) { ret = ret[0];
+         if (ret.length != 1) ret.splice(0, 0, rule.k);
+     }
+     rules.push(rule);
+     return ret;
+ }
 
+/*
 function parseExpr(rules, str) { // TODO (working on it)
     if (typeof(str) == "string") str = [str];
     var v, arr = [], tmp, rule = rules.pop();
@@ -186,7 +187,7 @@ function parseExpr(rules, str) { // TODO (working on it)
         }
         arr.push(tmp);
     }
-}
+}*/
 
 
 var utils = {
