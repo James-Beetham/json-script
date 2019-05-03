@@ -21,24 +21,24 @@ var allMessages = [];
 // give them all the previous messages
 io.on('connection', (socket) => {
     console.log('user connected');
-    socket.emit('prevMessages', allMessages);
+    socket.emit('prev-messages', allMessages);
 
     // when a new chat message is received
     // store it 
     // emit it to all users
-    socket.on('chatmsg', (payload) => {
+    socket.on('chat-msg', (payload) => {
         allMessages.push(payload);
-        io.emit('chatmsg', payload);
+        io.emit('chat-msg', payload);
     })
 
     // when a user is typing
     // emit it to all users except current user
-    socket.on('istyping', (user) => {
-        io.emit('istyping', user);
+    socket.on('is-typing', (user) => {
+        socket.broadcast.emit('is-typing', user);
     })
 
-    socket.on('stoppedtyping', (user) => {
-        io.emit('stoppedtyping', user);
+    socket.on('stopped-typing', (user) => {
+        socket.broadcast.emit('stopped-typing', user);
     })
 
     // when someone logs off

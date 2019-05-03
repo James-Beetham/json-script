@@ -15,27 +15,31 @@
 
 <body>
 
-    <div id="entry_div">
+    <div id="entry-div">
 
         <h4>Enter Username:</h4>
-        <input id="username_input" type="text">
+        <input id="username-input" type="text">
         <button onclick="setUsername()">Submit</button>
 
     </div>
 
-    <div id="chatpage_div" style="display: none;">
+    <div id="chatpage-div" style="display: none;">
 
         <h2>chat page</h2>
 
         <ul id="messages"></ul>
 
-        <ul id="typing_users"></ul>
+        <ul id="typing-users"></ul>
 
         <form action="" id="form">
             <input id="chatbox" type="text">
-            <button type="button">Send</button>
+            <button type="submit">Send</button>
         </form>
 
+
+        <div id="connected-users">
+            <ul id="users-list"></ul>
+        </div>
     </div>
 
 

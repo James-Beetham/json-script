@@ -14,8 +14,10 @@ $(function () {
             'username': username,
             'message': msg
         }
-        socket.emit('chatmsg', payload);
-        document.getElementById('chatbox').value = "";
+
+        socket.emit('chat-msg', payload);  // emit the message
+        document.getElementById('chatbox').value = ""; // clear chatbox
+        hasStoppedTyping(); // notify that this user is done typing
         return false;
     });
 
@@ -26,7 +28,7 @@ $(function () {
     // called by timeout function
     function hasStoppedTyping() {
         typing = false;
-        socket.emit('stoppedtyping', username);
+        socket.emit('stopped-typing', username);
     }
 
     // send an istyping message if input is changing
@@ -39,7 +41,7 @@ $(function () {
         // if was not typing, emit typing message to socket
         if(!typing) {
             typing = true;
-            socket.emit('istyping', username);
+            socket.emit('is-typing', username);
             timeout = setTimeout(hasStoppedTyping, 1000);
         } 
         // if user is still typing, reset the timeout
@@ -50,35 +52,40 @@ $(function () {
     })
 });
 
-socket.on('chatmsg', (payload) => {
+socket.on('chat-msg', (payload) => {
     appendMessage(payload);
 });
 
 
-socket.on('istyping', (username) => {
-    $('#typing_users').append(buildTypingListElement(username));
+socket.on('is-typing', (username) => {
+    $('#typing-users').append(buildTypingListElement(username));
 });
 
-socket.on('stoppedtyping', (username) => {
+socket.on('stopped-typing', (username) => {
     var id = getTypingId(username);
     $(`#${id}`).remove();
 });
 
-socket.on('prevMessages', (prevMessages) => {
+socket.on('prev-messages', (prevMessages) => {
     prevMessages.forEach(msg => {
         appendMessage(msg);
     });
 });
 
+socket.on('user-connect', (username) => {
+
+});
+
+
 
 function setUsername() {
 
     // get the username
-    username = document.getElementById('username_input').value;
+    username = document.getElementById('username-input').value;
 
     // make username input screen invisible and show the chat page
-    document.getElementById('entry_div').style.display = 'none';
-    document.getElementById('chatpage_div').style.display = 'block';
+    document.getElementById('entry-div').style.display = 'none';
+    document.getElementById('chatpage-div').style.display = 'block';
 }
 
 function appendMessage(payload) {
