@@ -5,7 +5,6 @@ var socket = io();
 
 
 $(function () {
-
     // send message on submit form
     $('form').submit(function (e) {
         e.preventDefault(); // prevents page reloading
@@ -58,7 +57,7 @@ socket.on('chat-msg', (payload) => {
 
 
 socket.on('is-typing', (username) => {
-    $('#typing-users').append(buildTypingListElement(username));
+    $('#typing-users').append(buildListElement(username, getTypingId, getTypingText));
 });
 
 socket.on('stopped-typing', (username) => {
@@ -72,20 +71,40 @@ socket.on('prev-messages', (prevMessages) => {
     });
 });
 
-socket.on('user-connect', (username) => {
-
+// when user connects
+// show a user connect message
+// and add them to online users message
+socket.on('user-connect', (payload) => {
+    $('#users-list').append(buildListElement(payload, getOnlineId, getOnlineText));
 });
 
+socket.on('user-disconnect', (username) => {
+    
+})
 
 
 function setUsername() {
 
     // get the username
-    username = document.getElementById('username-input').value;
+    var inputName = document.getElementById('username-input').value;
 
-    // make username input screen invisible and show the chat page
-    document.getElementById('entry-div').style.display = 'none';
-    document.getElementById('chatpage-div').style.display = 'block';
+    $.get(
+        '/isUserValid?username=' + inputName,
+        (response) => {
+            if(response == true) {
+                username = inputName;
+
+                // make username input screen invisible and show the chat page
+                document.getElementById('entry-div').style.display = 'none';
+                document.getElementById('chatpage-div').style.display = 'block';
+            
+                // tell the server a new user connected
+                socket.emit('user-connect', username);
+            } else {
+                alert('This username is already taken!');
+            }
+         }
+    )
 }
 
 function appendMessage(payload) {
@@ -94,11 +113,17 @@ function appendMessage(payload) {
 }
 
 
-function buildTypingListElement(username) {
-    var id = getTypingId(username);
-    return `<li id=${id}>${username} is typing...</id>`;
+function buildListElement(username, getId, getMsg) {
+    var id = getId(username);
+    var msg = getMsg(username);
+    return `<li id=${id}>${msg}</id>`;
 }
 
-function getTypingId(username) {
-    return `${username}-typing`;
-}
+
+function getOnlineId(username) { return `${username}-online`; }
+
+function getOnlineText(username) { return username; }
+
+function getTypingId(username) { return `${username}-typing`; }
+
+function getTypingText(username) { return `${username} is typing...`; }
