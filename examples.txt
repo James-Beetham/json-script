@@ -1,0 +1,15 @@
+Note:
+- all non-keywords are their own expression, eg: (var, a) is actually (var, (a))
+
+input:
+    var a = 1
+    var b = 2
+    ===
+    var a = 1;var b = 2;
+tree:
+(
+    ((=, (var, a), 1)),
+    ((=, (var, b), 2))
+)
+
+
