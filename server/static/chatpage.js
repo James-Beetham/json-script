@@ -141,7 +141,7 @@ socket.on('chat-msg', (payload) => {
 
 // when someone starts typing, add a typing msg to list
 socket.on('is-typing', (username) => {
-    $('#typing-users').append(buildListElement(username, getTypingId, getTypingText));
+    $('#typing-users').append(buildTypingUserElement(username));
 });
 
 // when someone stops typing, remove their typing msg from the list
