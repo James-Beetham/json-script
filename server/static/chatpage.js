@@ -3,6 +3,7 @@ var username;
 // socket connected to server
 var socket = io();
 
+var showNewMessages = false;
 
 $(function () {
     // send message on submit form
@@ -12,15 +13,16 @@ $(function () {
         var msg = $('#chatbox').val();
 
         // don't send a blank message
-        if(msg == '')
+        if (msg == '')
             return false;
 
         var payload = {
             'username': username,
-            'message': msg
+            'message': msg,
+            'type': 'message'
         }
 
-        socket.emit('chat-msg', payload);  // emit the message
+        socket.emit('chat-msg', payload); // emit the message
         $('#chatbox').val(""); // clear chatbox
         hasStoppedTyping(); // notify that this user is done typing
         return false;
@@ -28,14 +30,18 @@ $(function () {
 
 
     /**
-    * sets the username of current user (if its not already taken)
-    * then displays the chat page if its a valid username
-    */
+     * sets the username of current user (if its not already taken)
+     * then displays the chat page if its a valid username
+     */
     $('#username-form').submit((e) => {
         e.preventDefault() // prevent reload
 
         // get the username
         var inputName = $('#username-input').val();
+
+        // disallow blank username
+        if (inputName == '')
+            return false;
 
         // check to see if a user with this name is already logged in
         $.get(
@@ -51,6 +57,11 @@ $(function () {
 
                     // tell the server a new user connected
                     socket.emit('user-connect', username);
+
+                    // must display cached messages AFTER user logs in
+                    // so we know which css class to add to the messages
+                    displayCachedMessages();
+
                 } else {
                     alert('This username is already taken!');
                 }
@@ -89,21 +100,26 @@ $(function () {
     });
 
 
-    // get all the previous cached messages, and display
-    $.get(
-        '/previousMessages',
-        (messages) => {
-            messages.forEach(msg => {
-                appendMessage(msg);
-            });
-        }
-    )
+    function displayCachedMessages() {
+        // get all the previous cached messages, and display
+        $.get(
+            '/previousMessages',
+            (messages) => {
+                messages.forEach(msg => {
+                    appendMessage(msg);
+                });
+
+                // to prevent duplicates
+                showNewMessages = true;
+            }
+        )
+    }
+
 
     // get all the connected users and display them as online
     $.get(
         '/getOnlineUsers',
         (usernames) => {
-            console.log(typeof (usernames));
             usernames.forEach((user) => {
                 addOnlineUser(user);
             });
@@ -118,7 +134,8 @@ $(function () {
 //////////////////////
 // when a new chat message is received
 socket.on('chat-msg', (payload) => {
-    appendMessage(payload);
+    if (showNewMessages)
+        appendMessage(payload);
 });
 
 
@@ -149,26 +166,54 @@ socket.on('user-offline', (username) => {
 /////////////////
 // UPDATE VIEW //
 /////////////////
+
 // displays a given message
-function appendMessage(payload) {
-    var text = payload['username'] + ': ' + payload['message'];
-    $('#messages').append($('<li>').text(text));
+function appendMessage(messageObj) {
+
+    var html;
+    // if message type, figure out if this user sent it, or other user sent
+    if (messageObj['type'] === 'message') {
+        var msgClass = (username == messageObj['username']) ? 'user-msg' : 'other-msg';
+
+        html =
+            `<div class="msg ${msgClass}">
+                <div><strong>${messageObj['username']}</strong></div>
+                <div>${messageObj['message']}</div>
+            </div>`;
+    }
+    // its an info message
+    else if (messageObj['type'] === 'info') {
+        html =
+            `<div class="msg info-msg">
+                <div>${messageObj['message']}</div>
+            </div>`;
+    }
+
+    $('#messages').append(html);
 }
 
 // displays a user as online
 function addOnlineUser(username) {
-    $('#users-list').append(buildListElement(username, getOnlineId, getOnlineText));
+    $('#users-list').append(buildOnlineUserElement(username));
 }
 
-// builds a generic list element 
-// with username, function to get element id, and function to get text
-function buildListElement(username, getId, getMsg) {
-    var id = getId(username);
-    var msg = getMsg(username);
-    return `<li id=${id}>${msg}</id>`;
+function buildOnlineUserElement(username) {
+    var id = getOnlineId(username);
+    return `<div>
+                <span class="online-dot"></span>
+                <span id="${id}">${username}</span>
+            </div>`;
 }
 
-// all passed into buildListElement
+function buildTypingUserElement(username) {
+    var id = getTypingId(username);
+    var msg = getTypingText(username);
+
+    return `<div id="${id}">${msg}</div>`;
+}
+
+
+// all used to build list elements
 function getOnlineId(username) { return `${username}-online`; }
 
 function getOnlineText(username) { return username; }
@@ -176,3 +221,11 @@ function getOnlineText(username) { return username; }
 function getTypingId(username) { return `${username}-typing`; }
 
 function getTypingText(username) { return `${username} is typing...`; }
+
+
+window.onload = function () {
+    Particles.init({
+        selector: '.background',
+        color: 'white'
+    });
+};

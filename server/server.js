@@ -62,12 +62,13 @@ io.on('connection', (socket) => {
         socket._username = user;  // store the username to access on disconnect
 
         var msg = {
-            'username': user,
-            'message': `${user} has connected`
+            'message': `${user} has connected`,
+            'type': 'info'
         }
-        allMessages.push(msg); // store the user join msg
         io.emit('chat-msg', msg);   // emit user join msg
         io.emit('user-online', user); // say that this user is now online
+
+        allMessages.push(msg); // store the user join msg
     })
 
     // when someone logs off
@@ -77,8 +78,8 @@ io.on('connection', (socket) => {
         socket.broadcast.emit('user-offline', user); // broadcast that the user left
 
         var msg = {
-            'username': user,
-            'message': `${user} has disconnected`
+            'message': `${user} has disconnected`,
+            'type': 'info'
         };
 
         allMessages.push(msg); // store this message

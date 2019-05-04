@@ -17,31 +17,41 @@
 
     <div id="entry-div">
 
-        <h4>enter username</h4>
+        <h4>Welcome! Enter your username below</h4>
         <form action="" id="username-form">
-            <input id="username-input" type="text">
-            <button type="submit">Submit</button>
+            <input id="username-input" type="text" placeholder="username">
+            <button type="submit" class="btn btn-dark">Submit</button>
         </form>
 
     </div>
 
-    <div id="chatpage-div" style="display: none;">
+    <div id="chatpage-div" class="modal-body row" style="display: none;">
 
-        <h2>chat page</h2>
+        <!-- left col for online users -->
+        <div id="online-users-col" class="col-md-4">
+            <h2 style="margin-bottom: 10px;">Online Users</h2>
+            <div id="users-list"></div>
+        </div>
 
-        <ul id="messages"></ul>
+        <!-- right col for chat -->
+        <div id="chat-col" class="col-md-8">
 
-        <ul id="typing-users"></ul>
+            <h2 style="margin-bottom: 10px;">Messages</h2>
+            <div id="messages"></div>
 
-        <form action="" id="chat-form">
-            <input id="chatbox" type="text">
-            <button type="submit">Send</button>
-        </form>
+            <div id="typing-users"></div>
 
+            <hr/>
 
-        </h3>Online Users<h3>
-            <ul id="users-list"></ul>
+            <form action="" id="chat-form">
+                <input id="chatbox" type="text">
+                <button type="submit">Send</button>
+            </form>
+        </div>
+
     </div>
+
+    <canvas class="background"></canvas>
 
 
     <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.1.0/jquery.min.js"></script>
@@ -52,6 +62,7 @@
         integrity="sha384-JjSmVgyd0p3pXB1rRibZUAYoIIy6OrQ6VrjIEaFf/nJGzIxFDsf4x0xIM+B07jRM"
         crossorigin="anonymous"></script>
     <script src="/socket.io/socket.io.js"></script>
+    <Script src="https://cdnjs.cloudflare.com/ajax/libs/particlesjs/2.2.3/particles.min.js"></Script>
 
     <!-- dont need to say static/chatpage.js cause express looks 
         up files relative to static directory (given in server.js) -->
