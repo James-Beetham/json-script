@@ -6,18 +6,56 @@ var socket = io();
 
 $(function () {
     // send message on submit form
-    $('form').submit(function (e) {
+    $('#chat-form').submit((e) => {
         e.preventDefault(); // prevents page reloading
-        var msg = document.getElementById('chatbox').value;
+
+        var msg = $('#chatbox').val();
+
+        // don't send a blank message
+        if(msg == '')
+            return false;
+
         var payload = {
             'username': username,
             'message': msg
         }
 
         socket.emit('chat-msg', payload);  // emit the message
-        document.getElementById('chatbox').value = ""; // clear chatbox
+        $('#chatbox').val(""); // clear chatbox
         hasStoppedTyping(); // notify that this user is done typing
         return false;
+    });
+
+
+    /**
+    * sets the username of current user (if its not already taken)
+    * then displays the chat page if its a valid username
+    */
+    $('#username-form').submit((e) => {
+        e.preventDefault() // prevent reload
+
+        // get the username
+        var inputName = $('#username-input').val();
+
+        // check to see if a user with this name is already logged in
+        $.get(
+            '/isUserValid?username=' + inputName,
+            (response) => {
+                // if no one has this username...
+                if (response == true) {
+                    username = inputName;
+
+                    // make username input screen invisible and show the chat page
+                    $('#entry-div').hide();
+                    $('#chatpage-div').show();
+
+                    // tell the server a new user connected
+                    socket.emit('user-connect', username);
+                } else {
+                    alert('This username is already taken!');
+                }
+            }
+        )
     });
 
 
@@ -32,17 +70,17 @@ $(function () {
 
     // send an istyping message if input is changing
     $('#chatbox').on('change keyup paste', () => {
-        
+
         // if the box is empty (user clicked enter recently), then return
-        if($('#chatbox').val() === '')
+        if ($('#chatbox').val() === '')
             return;
 
         // if was not typing, emit typing message to socket
-        if(!typing) {
+        if (!typing) {
             typing = true;
             socket.emit('is-typing', username);
             timeout = setTimeout(hasStoppedTyping, 1000);
-        } 
+        }
         // if user is still typing, reset the timeout
         else {
             clearTimeout(timeout);
@@ -65,7 +103,7 @@ $(function () {
     $.get(
         '/getOnlineUsers',
         (usernames) => {
-            console.log(typeof(usernames));
+            console.log(typeof (usernames));
             usernames.forEach((user) => {
                 addOnlineUser(user);
             });
@@ -101,10 +139,10 @@ socket.on('user-online', (username) => {
     addOnlineUser(username);
 });
 
-// when user disconnects, remove from online users list
+// when user disconnects, remove from online users
 socket.on('user-offline', (username) => {
     var id = getOnlineId(username);
-    $(`#${id}`).remove(); 
+    $(`#${id}`).remove();
 })
 
 
@@ -138,36 +176,3 @@ function getOnlineText(username) { return username; }
 function getTypingId(username) { return `${username}-typing`; }
 
 function getTypingText(username) { return `${username} is typing...`; }
-
-
-
-
-/**
- * sets the username of current user (if its not already taken)
- * then displays the chat page if its a valid username
- */
-function setUsername() {
-
-    // get the username
-    var inputName = document.getElementById('username-input').value;
-
-    // check to see if a user with this name is already logged in
-    $.get(
-        '/isUserValid?username=' + inputName,
-        (response) => {
-            // if no one has this username...
-            if(response == true) {
-                username = inputName;
-
-                // make username input screen invisible and show the chat page
-                document.getElementById('entry-div').style.display = 'none';
-                document.getElementById('chatpage-div').style.display = 'block';
-            
-                // tell the server a new user connected
-                socket.emit('user-connect', username);
-            } else {
-                alert('This username is already taken!');
-            }
-         }
-    )
-}

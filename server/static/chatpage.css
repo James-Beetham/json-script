@@ -1,3 +1,15 @@
-h4 {
+/* 
+black #25274D
+dark gray #464866
+gray #AAABB8
+aqua #2E9CCA
+darkblue #29648A
+*/
+
+#entry-div {
+    position: fixed;
+    top: 40%;
+    left: 50%;
+    transform: translate(-50%, -50%);
     background-color: lightblue;
 }
