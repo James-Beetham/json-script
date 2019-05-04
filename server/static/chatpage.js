@@ -45,7 +45,7 @@ $(function () {
 
         // check to see if a user with this name is already logged in
         $.get(
-            '/isUserValid?username=' + inputName,
+            `/isUserValid?username=${inputName}`,
             (response) => {
                 // if no one has this username...
                 if (response == true) {
@@ -199,9 +199,9 @@ function addOnlineUser(username) {
 
 function buildOnlineUserElement(username) {
     var id = getOnlineId(username);
-    return `<div>
+    return `<div id="${id}">
                 <span class="online-dot"></span>
-                <span id="${id}">${username}</span>
+                <span>${username}</span>
             </div>`;
 }
 
