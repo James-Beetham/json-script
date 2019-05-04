@@ -48,49 +48,114 @@ $(function () {
             clearTimeout(timeout);
             timeout = setTimeout(hasStoppedTyping, 1000);;
         }
-    })
+    });
+
+
+    // get all the previous cached messages, and display
+    $.get(
+        '/previousMessages',
+        (messages) => {
+            messages.forEach(msg => {
+                appendMessage(msg);
+            });
+        }
+    )
+
+    // get all the connected users and display them as online
+    $.get(
+        '/getOnlineUsers',
+        (usernames) => {
+            console.log(typeof(usernames));
+            usernames.forEach((user) => {
+                addOnlineUser(user);
+            });
+        }
+    );
+
 });
 
+
+//////////////////////
+// SOCKET LISTENERS //
+//////////////////////
+// when a new chat message is received
 socket.on('chat-msg', (payload) => {
     appendMessage(payload);
 });
 
 
+// when someone starts typing, add a typing msg to list
 socket.on('is-typing', (username) => {
     $('#typing-users').append(buildListElement(username, getTypingId, getTypingText));
 });
 
+// when someone stops typing, remove their typing msg from the list
 socket.on('stopped-typing', (username) => {
     var id = getTypingId(username);
     $(`#${id}`).remove();
 });
 
-socket.on('prev-messages', (prevMessages) => {
-    prevMessages.forEach(msg => {
-        appendMessage(msg);
-    });
-});
-
 // when user connects
-// show a user connect message
 // and add them to online users message
-socket.on('user-connect', (payload) => {
-    $('#users-list').append(buildListElement(payload, getOnlineId, getOnlineText));
+socket.on('user-online', (username) => {
+    addOnlineUser(username);
 });
 
-socket.on('user-disconnect', (username) => {
-    
+// when user disconnects, remove from online users list
+socket.on('user-offline', (username) => {
+    var id = getOnlineId(username);
+    $(`#${id}`).remove(); 
 })
 
 
+/////////////////
+// UPDATE VIEW //
+/////////////////
+// displays a given message
+function appendMessage(payload) {
+    var text = payload['username'] + ': ' + payload['message'];
+    $('#messages').append($('<li>').text(text));
+}
+
+// displays a user as online
+function addOnlineUser(username) {
+    $('#users-list').append(buildListElement(username, getOnlineId, getOnlineText));
+}
+
+// builds a generic list element 
+// with username, function to get element id, and function to get text
+function buildListElement(username, getId, getMsg) {
+    var id = getId(username);
+    var msg = getMsg(username);
+    return `<li id=${id}>${msg}</id>`;
+}
+
+// all passed into buildListElement
+function getOnlineId(username) { return `${username}-online`; }
+
+function getOnlineText(username) { return username; }
+
+function getTypingId(username) { return `${username}-typing`; }
+
+function getTypingText(username) { return `${username} is typing...`; }
+
+
+
+
+/**
+ * sets the username of current user (if its not already taken)
+ * then displays the chat page if its a valid username
+ */
 function setUsername() {
 
     // get the username
     var inputName = document.getElementById('username-input').value;
 
+    // check to see if a user with this name is already logged in
     $.get(
         '/isUserValid?username=' + inputName,
         (response) => {
+            // if no one has this username...
             if(response == true) {
                 username = inputName;
 
@@ -106,24 +171,3 @@ function setUsername() {
          }
     )
 }
-
-function appendMessage(payload) {
-    var text = payload['username'] + ': ' + payload['message'];
-    $('#messages').append($('<li>').text(text));
-}
-
-
-function buildListElement(username, getId, getMsg) {
-    var id = getId(username);
-    var msg = getMsg(username);
-    return `<li id=${id}>${msg}</id>`;
-}
-
-
-function getOnlineId(username) { return `${username}-online`; }
-
-function getOnlineText(username) { return username; }
-
-function getTypingId(username) { return `${username}-typing`; }
-
-function getTypingText(username) { return `${username} is typing...`; }

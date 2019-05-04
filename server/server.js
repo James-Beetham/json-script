@@ -3,9 +3,9 @@ var app = express();
 var http = require('http').Server(app);
 var io = require('socket.io')(http);
 
-
 app.use(express.static('templates'));
 app.use(express.static('static'));
+
 
 app.get('/', (req, res) => {
     res.sendFile(__dirname + '/templates/chatpage.html');
@@ -18,6 +18,15 @@ app.get('/isUserValid', (req, res) => {
     res.send(!connectedUsers.has(username));
 });
 
+app.get('/getOnlineUsers', (req, res) => {
+    res.send(Array.from(connectedUsers));
+});
+
+app.get('/previousMessages', (req, res) => {
+    res.send(allMessages);
+});
+
+
 
 // list of all messages
 // a message contains a user and the text
@@ -28,8 +37,6 @@ var connectedUsers = new Set();
 // when a user connects,
 // give them all the previous messages
 io.on('connection', (socket) => {
-    socket.emit('prev-messages', allMessages);
-
     // when a new chat message is received
     // store it and emit it to all users
     socket.on('chat-msg', (payload) => {
@@ -43,47 +50,43 @@ io.on('connection', (socket) => {
         socket.broadcast.emit('is-typing', user);
     })
 
+    // when user stops typing
+    // emit it to all users except current user
     socket.on('stopped-typing', (user) => {
         socket.broadcast.emit('stopped-typing', user);
     })
 
+    // when current user enters their username
     socket.on('user-connect', (user) => {
         connectedUsers.add(user); // add user to connected users set
         socket._username = user;  // store the username to access on disconnect
-        
+
         var msg = {
             'username': user,
-            'message': `${user} has connected`,
-            'messageType': 'connect'
+            'message': `${user} has connected`
         }
-        allMessages.push(msg);
-        io.emit('chat-msg', msg);   // emit this new username to everyone
+        allMessages.push(msg); // store the user join msg
+        io.emit('chat-msg', msg);   // emit user join msg
+        io.emit('user-online', user); // say that this user is now online
     })
 
     // when someone logs off
     socket.on('disconnect', () => {
-        connectedUsers.delete(socket._username); // delete this user from set
-        socket.broadcast.emit('user-disconnect', socket._username); // broadcast that the user left
+        var user = socket._username;
+        connectedUsers.delete(user); // delete this user from set
+        socket.broadcast.emit('user-offline', user); // broadcast that the user left
+
+        var msg = {
+            'username': user,
+            'message': `${user} has disconnected`
+        };
+
+        allMessages.push(msg); // store this message
+        io.emit('chat-msg', msg); // emit disconnection message
     })
-})
+});
 
 // listen on port 8000
 http.listen(8000, () => {
     console.log('server listening');
-})
-
-
-/**
- * method 1:
- * message and user connection will have 2 seperate sockets
- * when this user connects, send all online users to them
- * when other user connects/disconnects call the appropriate socket function
- * 
- * 
- * method 2:
- * pass connection/disconnection as a message, store the messageType in message obj
- * when this user connects, just need to get all messages, go thru every message
- * and set the state of the online users accordingly
- * when get a new message, must check if its a connection/disconnection message
- * type and change state of onlineusers accordingly.
- */
+});
