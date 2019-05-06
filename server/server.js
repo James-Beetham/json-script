@@ -37,6 +37,7 @@ var connectedUsers = new Set();
 // when a user connects,
 // give them all the previous messages
 io.on('connection', (socket) => {
+    console.log("connected user: %s", socket.id);
     // when a new chat message is received
     // store it and emit it to all users
     socket.on('chat-msg', (payload) => {

@@ -18,10 +18,8 @@
     <div id="entry-div">
 
         <h4>Welcome! Enter your username below</h4>
-        <form action="" id="username-form">
-            <input id="username-input" type="text" placeholder="username">
-            <button type="submit" class="btn btn-dark">Submit</button>
-        </form>
+        <div id="username-input" contenteditable="true"
+            style="width:150px;display:inline-block;margin-right:10px;border:1px solid black;"></div>
 
     </div>
 
@@ -36,7 +34,7 @@
         <!-- right col for chat -->
         <div id="chat-col" class="col-md-8">
 
-            <h2 style="margin-bottom: 10px;">Messages</h2>
+            <h2 style="margin-bottom: 10px;">Global Chat Messages</h2>
             <div id="messages"></div>
 
             <div id="typing-users"></div>

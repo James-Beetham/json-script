@@ -6,6 +6,7 @@ var socket = io();
 var showNewMessages = false;
 
 $(function () {
+
     // send message on submit form
     $('#chat-form').submit((e) => {
         e.preventDefault(); // prevents page reloading
@@ -28,46 +29,44 @@ $(function () {
         return false;
     });
 
+    // when user clicks enter, try to login with that username
+    $('#username-input').keydown((e) => {
+        if (e.key == 'Enter') {
+            // get the username
+            var inputName = document.getElementById('username-input').innerHTML;
 
-    /**
-     * sets the username of current user (if its not already taken)
-     * then displays the chat page if its a valid username
-     */
-    $('#username-form').submit((e) => {
-        e.preventDefault() // prevent reload
+            // disallow blank username
+            if (inputName == '')
+                return false;
 
-        // get the username
-        var inputName = $('#username-input').val();
+            // check to see if a user with this name is already logged in
+            $.get(
+                `/isUserValid?username=${inputName}`,
+                (response) => {
+                    // if no one has this username...
+                    if (response == true) {
+                        username = inputName;
 
-        // disallow blank username
-        if (inputName == '')
-            return false;
+                        // make username input screen invisible and show the chat page
+                        $('#entry-div').hide();
+                        $('#chatpage-div').show();
 
-        // check to see if a user with this name is already logged in
-        $.get(
-            `/isUserValid?username=${inputName}`,
-            (response) => {
-                // if no one has this username...
-                if (response == true) {
-                    username = inputName;
+                        // tell the server a new user connected
+                        socket.emit('user-connect', username);
 
-                    // make username input screen invisible and show the chat page
-                    $('#entry-div').hide();
-                    $('#chatpage-div').show();
+                        // must display cached messages AFTER user logs in
+                        // so we know which css class to add to the messages
+                        displayCachedMessages();
 
-                    // tell the server a new user connected
-                    socket.emit('user-connect', username);
-
-                    // must display cached messages AFTER user logs in
-                    // so we know which css class to add to the messages
-                    displayCachedMessages();
-
-                } else {
-                    alert('This username is already taken!');
+                    } else {
+                        alert('This username is already taken!');
+                    }
                 }
-            }
-        )
+            )
+        }
     });
+
+
 
 
     var typing = false;
