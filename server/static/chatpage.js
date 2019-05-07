@@ -1,5 +1,7 @@
 // global variable representing user who is logged in 
-var username;
+var loggedInUsername;
+// global variable representing the image url of the user logged in
+var loggedInImgURL = 'genericprofile.png';
 // socket connected to server
 var socket = io();
 
@@ -18,7 +20,8 @@ $(function () {
             return false;
 
         var payload = {
-            'username': username,
+            'username': loggedInUsername,
+            'imageURL': loggedInImgURL,
             'message': msg,
             'type': 'message'
         }
@@ -30,40 +33,41 @@ $(function () {
     });
 
     // when user clicks enter, try to login with that username
-    $('#username-input').keydown((e) => {
-        if (e.key == 'Enter') {
-            // get the username
-            var inputName = document.getElementById('username-input').innerHTML;
+    $('#login-submit').click((e) => {
+        // get the username
+        var inputName = document.getElementById('username-input').innerHTML;
 
-            // disallow blank username
-            if (inputName == '')
-                return false;
+        // get profileurl
+        loggedInImgURL = document.getElementById('url-input').innerHTML;
 
-            // check to see if a user with this name is already logged in
-            $.get(
-                `/isUserValid?username=${inputName}`,
-                (response) => {
-                    // if no one has this username...
-                    if (response == true) {
-                        username = inputName;
+        // disallow blank username
+        if (inputName == '')
+            return false;
 
-                        // make username input screen invisible and show the chat page
-                        $('#entry-div').hide();
-                        $('#chatpage-div').show();
+        // check to see if a user with this name is already logged in
+        $.get(
+            `/isUserValid?username=${inputName}`,
+            (response) => {
+                // if no one has this username...
+                if (response == true) {
+                    loggedInUsername = inputName;
 
-                        // tell the server a new user connected
-                        socket.emit('user-connect', username);
+                    // make username input screen invisible and show the chat page
+                    $('#entry-div').hide();
+                    $('#chatpage-div').show();
 
-                        // must display cached messages AFTER user logs in
-                        // so we know which css class to add to the messages
-                        displayCachedMessages();
+                    // tell the server a new user connected
+                    socket.emit('user-connect', loggedInUsername);
 
-                    } else {
-                        alert('This username is already taken!');
-                    }
+                    // must display cached messages AFTER user logs in
+                    // so we know which css class to add to the messages
+                    displayCachedMessages();
+
+                } else {
+                    alert('This username is already taken!');
                 }
-            )
-        }
+            }
+        )
     });
 
 
@@ -75,7 +79,7 @@ $(function () {
     // called by timeout function
     function hasStoppedTyping() {
         typing = false;
-        socket.emit('stopped-typing', username);
+        socket.emit('stopped-typing', loggedInUsername);
     }
 
     // send an istyping message if input is changing
@@ -88,7 +92,7 @@ $(function () {
         // if was not typing, emit typing message to socket
         if (!typing) {
             typing = true;
-            socket.emit('is-typing', username);
+            socket.emit('is-typing', loggedInUsername);
             timeout = setTimeout(hasStoppedTyping, 1000);
         }
         // if user is still typing, reset the timeout
@@ -170,21 +174,25 @@ socket.on('user-offline', (username) => {
 function appendMessage(messageObj) {
 
     var html;
+    var text = messageObj.message;
     // if message type, figure out if this user sent it, or other user sent
     if (messageObj['type'] === 'message') {
-        var msgClass = (username == messageObj['username']) ? 'user-msg' : 'other-msg';
+        var msgClass = (loggedInUsername == messageObj['username']) ? 'user-msg' : 'other-msg';
+
+        var username = messageObj.username;
+        var imgURL = messageObj.imageURL;
 
         html =
             `<div class="msg ${msgClass}">
-                <div><strong>${messageObj['username']}</strong></div>
-                <div>${messageObj['message']}</div>
+                <div><img class="profile-img" src="${imgURL}"><strong>${username}</strong></div>
+                <div>${text}</div>
             </div>`;
     }
     // its an info message
     else if (messageObj['type'] === 'info') {
         html =
             `<div class="msg info-msg">
-                <div>${messageObj['message']}</div>
+                <div>${text}</div>
             </div>`;
     }
 

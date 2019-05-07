@@ -15,14 +15,38 @@
 
 <body>
 
+    <!-- LOGIN LAYOUT -->
     <div id="entry-div">
+        <h4>Welcome! Enter your details to join the group chat!</h4>
 
-        <h4>Welcome! Enter your username below</h4>
-        <div id="username-input" contenteditable="true"
-            style="width:150px;display:inline-block;margin-right:10px;border:1px solid black;"></div>
+        <!-- username row -->
+        <div class="row">
+            <div class="left-col">
+                <div>Username</div>
+            </div>
+            <div class="right-col">
+                <div id="username-input" contenteditable="true" class="custom-input"></div>
+            </div>
+        </div>
+
+        <!-- img url row -->
+        <div class="row">
+            <div class="left-col">
+                <div>Profile Image URL (optional)</div>
+            </div>
+            <div class="right-col">
+                <div id="url-input" contenteditable="true" class="custom-input"></div>
+            </div>
+        </div>
+
+        <!-- submit btn -->
+        <button id="login-submit" type="button">Submit</button>
 
     </div>
 
+
+
+    <!-- CHAT PAGE LAYOUTS -->
     <div id="chatpage-div" class="modal-body row" style="display: none;">
 
         <!-- left col for online users -->
