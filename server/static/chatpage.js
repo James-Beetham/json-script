@@ -38,7 +38,9 @@ $(function () {
         var inputName = document.getElementById('username-input').innerHTML;
 
         // get profileurl
-        loggedInImgURL = document.getElementById('url-input').innerHTML;
+        var imgUrl = document.getElementById('url-input').innerHTML;
+        if(imgUrl != '')
+            loggedInImgURL = imgUrl;
 
         // disallow blank username
         if (inputName == '')
@@ -78,6 +80,7 @@ $(function () {
 
     // called by timeout function
     function hasStoppedTyping() {
+        console.log(loggedInUsername + ' has stopped typing');
         typing = false;
         socket.emit('stopped-typing', loggedInUsername);
     }
