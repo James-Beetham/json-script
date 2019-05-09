@@ -92,3 +92,11 @@ body {
 #chat-form {
     clear: both;
 }
+
+.username-item:hover{
+    cursor:pointer;
+}
+
+#modal-guide{
+    color:black;
+}

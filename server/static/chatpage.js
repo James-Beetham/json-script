@@ -6,6 +6,19 @@ var socket = io();
 var showNewMessages = false;
 
 $(function () {
+    username = document.cookie.match(/username=s%3A(.*)\./)[1];
+    $('#entry-div').hide();
+    $('#chatpage-div').show();
+
+    // tell the server a new user connected
+    socket.emit('user-connect', username);
+
+    // must display cached messages AFTER user logs in
+    // so we know which css class to add to the messages
+    displayCachedMessages();
+
+    $("#modal-guide").modal({keyboard: true, show:true});
+
     // send message on submit form
     $('#chat-form').submit((e) => {
         e.preventDefault(); // prevents page reloading
@@ -33,11 +46,12 @@ $(function () {
      * sets the username of current user (if its not already taken)
      * then displays the chat page if its a valid username
      */
-    $('#username-form').submit((e) => {
+    /*$('#username-form').submit((e) => {
         e.preventDefault() // prevent reload
 
         // get the username
         var inputName = $('#username-input').val();
+
 
         // disallow blank username
         if (inputName == '')
@@ -67,7 +81,7 @@ $(function () {
                 }
             }
         )
-    });
+    });*/
 
 
     var typing = false;
@@ -117,11 +131,17 @@ $(function () {
 
 
     // get all the connected users and display them as online
+    // Causes the username to appear twice
     $.get(
         '/getOnlineUsers',
         (usernames) => {
             usernames.forEach((user) => {
-                addOnlineUser(user);
+                console.log("getOnlineUsers");
+                if(username == user){
+                    return;
+                }else{
+                    addOnlineUser(user);
+                }
             });
         }
     );
@@ -153,6 +173,7 @@ socket.on('stopped-typing', (username) => {
 // when user connects
 // and add them to online users message
 socket.on('user-online', (username) => {
+    console.log("on user-online");
     addOnlineUser(username);
 });
 
@@ -194,6 +215,7 @@ function appendMessage(messageObj) {
 
 // displays a user as online
 function addOnlineUser(username) {
+    console.log("Adding user: " + username);
     $('#users-list').append(buildOnlineUserElement(username));
 }
 
@@ -201,8 +223,13 @@ function buildOnlineUserElement(username) {
     var id = getOnlineId(username);
     return `<div id="${id}">
                 <span class="online-dot"></span>
-                <span>${username}</span>
+                <span class="username-item" onclick="sendWhisper('${username}')" >${username}</span>
             </div>`;
+}
+
+function sendWhisper(targetUser){
+    $("#chatbox").val("/w " + targetUser + " ");
+    $("#chatbox").focus();
 }
 
 function buildTypingUserElement(username) {

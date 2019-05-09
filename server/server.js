@@ -1,15 +1,72 @@
 var express = require('express');
-var app = express();
-var http = require('http').Server(app);
-var io = require('socket.io')(http);
+var app     = express();
+var path    = require("path");
+var server  = require('http').Server(app);
+var io      = require('socket.io')(server);
+var flash   = require("connect-flash");
+var morgan  = require("morgan");
+var session = require("express-session");
+var mongoose     = require("mongoose");
+var passport     = require("passport");
+var cookieParser = require("cookie-parser");
+var bodyParser   = require("body-parser");
 
+
+mongoose.connect("mongodb+srv://admin_1:password_1@cluster0-kzopf.mongodb.net/test?retryWrites=true", {useNewUrlParser: true});
+mongoose.set('useCreateIndex', true);
+
+app.set("view engine", "ejs");
 app.use(express.static('templates'));
 app.use(express.static('static'));
+app.use(bodyParser.urlencoded({extended: true}));
+app.use(bodyParser.json());
+app.use(cookieParser("secretkey"));
+app.use(morgan("dev"));
 
+var sessionStore = new session.MemoryStore();
+var sessionSetup = session({
+    secret: "simplesecretkey",
+    resave: true,
+    saveUninitialized: true,
+    store: sessionStore
+});
+
+
+app.use(sessionSetup);
+
+app.use(passport.initialize());
+app.use(passport.session());
+app.use(flash());
+
+require("./config/passport-config");
+
+var authRouter = require("./router/authentication-router");
+app.use("/a", authRouter);
 
 app.get('/', (req, res) => {
-    res.sendFile(__dirname + '/templates/chatpage.html');
+    if(!req.isAuthenticated()){
+        return res.redirect("/a/login");
+    }
+
+    return res.sendFile(path.resolve(__dirname, "./templates/chatpage.html"));
 });
+
+app.get("/chat", (req, res)=>{
+    if(!req.isAuthenticated()){
+        return res.redirect("/a/login");
+    }
+
+    return res.sendFile(path.resolve(__dirname, "./templates/chatpage.html"));
+});
+
+/*app.get(/^\/login$|^\/register$/, (req, res)=>{
+    var registerMessage = req.flash("registerMessage");
+    var loginMessage    = req.flash("loginMessage");
+
+    console.log("registerMessage", registerMessage);
+    console.log("loginMessage", loginMessage);
+    res.sendFile(path.resolve(__dirname, "./templates/authentication.html"));
+});*/
 
 
 // return true if username not taken
@@ -26,13 +83,11 @@ app.get('/previousMessages', (req, res) => {
     res.send(allMessages);
 });
 
-
-
 // list of all messages
 // a message contains a user and the text
 var allMessages = [];
 var connectedUsers = new Set();
-
+var connectedSockets = [];
 
 // when a user connects,
 // give them all the previous messages
@@ -41,6 +96,31 @@ io.on('connection', (socket) => {
     // store it and emit it to all users
     socket.on('chat-msg', (payload) => {
         allMessages.push(payload);
+        // console.log(payload.message);
+        // console.log(payload.message.match(/\/w/));
+        // console.log(payload.message.match(/\/w (\w+) \w+/));
+
+        if(payload.message.match(/\/w/)){
+            var targetUser = payload.message.match(/\/w +(\w+)/)[1];
+            var message    = payload.message.match(/\/w +\w+ (.*)/)[1];
+            // console.log("target is: " + connectedUsers.get(targetUser));
+
+            for(const userSocket of connectedSockets){
+                if(userSocket.username == targetUser){
+                    // A new payload is created to avoid mutation.
+                    var newPayload = {
+                        username : payload.username,
+                        message  : "** " + message + " **",
+                        type     : "message"
+                    };
+
+                    socket.emit("chat-msg", newPayload);
+                    userSocket.socket.emit("chat-msg", newPayload);
+                }
+            }
+            return;
+        }
+
         io.emit('chat-msg', payload);
     })
 
@@ -59,6 +139,15 @@ io.on('connection', (socket) => {
     // when current user enters their username
     socket.on('user-connect', (user) => {
         connectedUsers.add(user); // add user to connected users set
+
+        // The socket object is used to receive the target message.
+        // The username is used to identify the user.
+        var userSocket = {
+            username: user,
+            socket  : socket
+        };
+        connectedSockets.push(userSocket);
+
         socket._username = user;  // store the username to access on disconnect
 
         var msg = {
@@ -75,6 +164,16 @@ io.on('connection', (socket) => {
     socket.on('disconnect', () => {
         var user = socket._username;
         connectedUsers.delete(user); // delete this user from set
+
+        // Remove the connectedSocket object.
+        for(var i= 0; i < connectedSockets.length; i++ ){
+            if(connectedSockets[i] != null 
+                && connectedSockets[i].username == user)
+            {
+                delete connectedSockets[i];
+            }
+        }
+
         socket.broadcast.emit('user-offline', user); // broadcast that the user left
 
         var msg = {
@@ -88,6 +187,6 @@ io.on('connection', (socket) => {
 });
 
 // listen on port 8000
-http.listen(8000, () => {
+server.listen(80, () => {
     console.log('server listening');
 });
