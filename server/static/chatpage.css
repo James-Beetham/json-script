@@ -1,3 +1,4 @@
+<<<<<<< HEAD
 /* 
 black #25274D
 dark gray #464866
@@ -99,4 +100,143 @@ body {
 
 #modal-guide{
     color:black;
+=======
+/* 
+Application color scheme
+black #25274D
+dark gray #464866
+gray #AAABB8
+aqua #2E9CCA
+darkblue #29648A
+*/
+
+
+/* generic tags */
+html {
+    margin: 0;
+    padding: 0;
+}
+
+body {
+    background-color: #25274D;
+    color: white;
+    overflow-x: hidden;
+}
+
+
+
+/* classes */
+.background {
+    margin: 0;
+    padding: 0;
+    position: absolute;
+    display: block;
+    top: 0;
+    left: 0;
+    z-index: -1;
+}
+
+
+.msg {
+    padding: 5px;
+    color: black;
+    border-radius: 10px;
+    display: table;
+    clear: both;
+    margin: 0px 5px 5px 5px;
+}
+
+.other-msg {
+    float: left;
+    background-color: #AAABB8;
+    text-align: left; 
+}
+
+.user-msg {
+    float: right;
+    background-color: #2ECCCA;
+    text-align: right;
+}
+
+.info-msg {
+    opacity: 0.7;
+    margin: 0 auto;
+    background-color: antiquewhite;
+    text-align: center;
+}
+
+.online-dot {
+    height: 12px;
+    width: 12px;
+    background-color: greenyellow;
+    border-radius: 50%;
+    display: inline-block;
+}
+
+.custom-input {
+    width:150px;
+    display:inline-block;
+    margin-right:10px;
+    border:1px solid black;
+}
+
+
+.profile-img {
+    margin: 5px;
+    width: 40px;
+    height: 40px;
+    border-radius: 50%;
+}
+
+
+.row {
+    text-align: center;
+    padding: 5px;
+}
+
+.left-col {
+    padding-right: 5px;
+    text-align: right;
+    flex: 45%;
+}
+
+.right-col {
+    padding-left: 5px;
+    text-align: left;
+    flex: 55%;
+}
+
+
+/* id */
+#entry-div {
+    position: fixed;
+    top: 40%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    background-color: #AAABB8;
+    border-radius: 10px;
+    padding: 15px 15px 20px 15px;
+    text-align: center;
+    color: #25274D;
+    box-shadow: 5px 7px 15px rgb(80, 84, 89);
+}
+
+
+#online-users-col {
+    text-align: center;
+    border-right: 1px solid white;
+}
+
+#chat-col {
+    overflow: auto;
+    text-align: center;
+}
+
+#chat-form {
+    clear: both;
+}
+
+#login-submit {
+    margin-top: 10px;
+>>>>>>> master
 }
