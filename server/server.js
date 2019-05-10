@@ -12,7 +12,9 @@ var cookieParser = require("cookie-parser");
 var bodyParser   = require("body-parser");
 
 
-mongoose.connect("mongodb+srv://admin_1:password_1@cluster0-kzopf.mongodb.net/test?retryWrites=true", {useNewUrlParser: true});
+mongoose.connect("mongodb+srv://admin_1:password_1@cluster0-kzopf.mongodb.net/test?retryWrites=true", {useNewUrlParser: true}).catch((error) => {
+    console.log(error);
+});
 mongoose.set('useCreateIndex', true);
 
 app.set("view engine", "ejs");
@@ -186,7 +188,7 @@ io.on('connection', (socket) => {
     })
 });
 
-// listen on port 80
-server.listen(80, () => {
+// listen on port 8000
+server.listen(8000, () => {
     console.log('server listening');
 });
