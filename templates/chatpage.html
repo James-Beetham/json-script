@@ -1,0 +1,217 @@
+<<<<<<< HEAD
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+
+    <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/css/bootstrap.min.css"
+        integrity="sha384-ggOyR0iXCbMQv3Xipma34MD+dH/1fQ784/j6cY/iJTQUOhcWr7x9JvoRxT2MZw1T" crossorigin="anonymous">
+    <link rel="stylesheet" type="text/css" href="/chatpage.css">
+
+    <title>Programmers Chat</title>
+</head>
+
+
+<body>
+
+    <!-- <div id="entry-div">
+
+        <h4>Welcome! Enter your username below</h4>
+        <form action="" id="username-form">
+            <input id="username-input" type="text" placeholder="username">
+            <button type="submit" class="btn btn-dark">Submit</button>
+        </form>
+
+    </div> -->
+
+
+
+    <!-- Modal -->
+    <div class="modal" id="modal-guide" tabindex="-1" role="dialog">
+        <div class="modal-dialog" role="document">
+            <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title">Helpful tip</h5>
+                <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                <span aria-hidden="true">&times;</span>
+                </button>
+            </div>
+            <div class="modal-body">
+                <p>You can click on a user from the Online Users list, to send a whisper</p>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
+            </div>
+         </div>
+        </div>
+    </div>
+
+   <!--      
+   <button type="button" class="btn btn-primary" data-toggle="modal" data-target="#exampleModal">
+      Launch demo modal
+    </button>
+
+    <div class="modal fade" id="exampleModal" tabindex="-1" role="dialog" aria-labelledby="exampleModalLabel" aria-hidden="true">
+      <div class="modal-dialog" role="document">
+        <div class="modal-content">
+          <div class="modal-header">
+            <h5 class="modal-title" id="exampleModalLabel">Modal title</h5>
+            <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+              <span aria-hidden="true">&times;</span>
+            </button>
+          </div>
+          <div class="modal-body">
+            ...
+          </div>
+          <div class="modal-footer">
+            <button type="button" class="btn btn-secondary" data-dismiss="modal">Close</button>
+            <button type="button" class="btn btn-primary">Save changes</button>
+          </div>
+        </div>
+  </div>
+</div> -->
+
+    <div id="chatpage-div" class="modal-body row" style="display: none;">
+
+        <!-- left col for online users -->
+        <div id="online-users-col" class="col-md-4">
+            <h2 style="margin-bottom: 10px;">Online Users</h2>
+            <div id="users-list"></div>
+        </div>
+
+        <!-- right col for chat -->
+        <div id="chat-col" class="col-md-8">
+
+            <h2 style="margin-bottom: 10px;">Messages</h2>
+            <div id="messages"></div>
+
+            <div id="typing-users"></div>
+
+            <br>
+
+            <form action="" id="chat-form">
+                <input id="chatbox" type="text">
+                <button type="submit">Send</button>
+            </form>
+        </div>
+
+    </div>
+
+    <canvas class="background"></canvas>
+
+
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.1.0/jquery.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.14.7/umd/popper.min.js"
+        integrity="sha384-UO2eT0CpHqdSJQ6hJty5KVphtPhzWj9WO1clHTMGa3JDZwrnQq4sF86dIHNDz0W1"
+        crossorigin="anonymous"></script>
+    <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/js/bootstrap.min.js"
+        integrity="sha384-JjSmVgyd0p3pXB1rRibZUAYoIIy6OrQ6VrjIEaFf/nJGzIxFDsf4x0xIM+B07jRM"
+        crossorigin="anonymous"></script>
+    <script src="/socket.io/socket.io.js"></script>
+    <Script src="https://cdnjs.cloudflare.com/ajax/libs/particlesjs/2.2.3/particles.min.js"></Script>
+
+    <!-- dont need to say static/chatpage.js cause express looks 
+        up files relative to static directory (given in server.js) -->
+    <script src="chatpage.js"></script>
+</body>
+
+
+=======
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+
+    <link rel="stylesheet" href="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/css/bootstrap.min.css"
+        integrity="sha384-ggOyR0iXCbMQv3Xipma34MD+dH/1fQ784/j6cY/iJTQUOhcWr7x9JvoRxT2MZw1T" crossorigin="anonymous">
+    <link rel="stylesheet" type="text/css" href="/chatpage.css">
+
+    <title>Programmers Chat</title>
+</head>
+
+
+<body>
+
+    <!-- LOGIN LAYOUT -->
+    <div id="entry-div">
+        <h4>Welcome! Enter your details to join the group chat!</h4>
+
+        <!-- username row -->
+        <div class="row">
+            <div class="left-col">
+                <div>Username</div>
+            </div>
+            <div class="right-col">
+                <div id="username-input" contenteditable="true" class="custom-input"></div>
+            </div>
+        </div>
+
+        <!-- img url row -->
+        <div class="row">
+            <div class="left-col">
+                <div>Profile Image URL (optional)</div>
+            </div>
+            <div class="right-col">
+                <div id="url-input" contenteditable="true" class="custom-input"></div>
+            </div>
+        </div>
+
+        <!-- submit btn -->
+        <button id="login-submit" type="button">Submit</button>
+
+    </div>
+
+
+
+    <!-- CHAT PAGE LAYOUTS -->
+    <div id="chatpage-div" class="modal-body row" style="display: none;">
+
+        <!-- left col for online users -->
+        <div id="online-users-col" class="col-md-4">
+            <h2 style="margin-bottom: 10px;">Online Users</h2>
+            <div id="users-list"></div>
+        </div>
+
+        <!-- right col for chat -->
+        <div id="chat-col" class="col-md-8">
+
+            <h2 style="margin-bottom: 10px;">Global Chat Messages</h2>
+            <div id="messages" style="overflow: hidden;"></div>
+
+            <div id="typing-users"></div>
+
+            <br>
+
+            <form action="" id="chat-form">
+                <input id="chatbox" type="text">
+                <button type="submit">Send</button>
+            </form>
+        </div>
+
+    </div>
+
+    <canvas class="background"></canvas>
+
+
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.1.0/jquery.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.14.7/umd/popper.min.js"
+        integrity="sha384-UO2eT0CpHqdSJQ6hJty5KVphtPhzWj9WO1clHTMGa3JDZwrnQq4sF86dIHNDz0W1"
+        crossorigin="anonymous"></script>
+    <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/js/bootstrap.min.js"
+        integrity="sha384-JjSmVgyd0p3pXB1rRibZUAYoIIy6OrQ6VrjIEaFf/nJGzIxFDsf4x0xIM+B07jRM"
+        crossorigin="anonymous"></script>
+    <script src="/socket.io/socket.io.js"></script>
+    <Script src="https://cdnjs.cloudflare.com/ajax/libs/particlesjs/2.2.3/particles.min.js"></Script>
+
+    <!-- dont need to say static/chatpage.js cause express looks 
+        up files relative to static directory (given in server.js) -->
+    <script src="chatpage.js"></script>
+</body>
+
+
+>>>>>>> master
+</html>
