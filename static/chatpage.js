@@ -161,7 +161,7 @@ socket.on('user-offline', (username) => {
 function appendMessage(messageObj) {
 
     var html;
-    var msg = messageObj['message'];
+    var msgText = messageObj['message'];
     // if message type, figure out if this user sent it, or other user sent
     if (messageObj['type'] === 'message') {
 
@@ -174,16 +174,16 @@ function appendMessage(messageObj) {
             `<div id="msg${msgIndex}" class="msg ${msgClass}">
                 <div>
                     <img class="profile-img" src="${msgImgURL}">
-                    <strong>${username}</strong>
+                    <strong>${msgUser}</strong>
                 </div>
-                <div>${msg}</div>
+                <div>${msgText}</div>
             </div>`;
     }
     // its an info message
     else if (messageObj['type'] === 'info') {
         html =
             `<div id="msg${msgIndex}" class="msg info-msg">
-                <div>${msg}</div>
+                <div>${msgText}</div>
             </div>`;
     }
 
