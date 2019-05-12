@@ -242,3 +242,15 @@ function logout() {
     document.cookie = "username= ; expires = Thu, 01 Jan 1970 00:00:00 GMT";
     window.location.href = "/a/login";
 }
+
+function updateProfilePicture() {
+    var url = document.getElementById('profile-img-input').value;
+
+    $.ajax({
+        url: `/profileURLs?username=${username}&profileURL=${url}`,
+        type: 'put',
+        success: (response) => {
+            window.location.reload();
+        }
+    });
+}

@@ -93,6 +93,14 @@ app.get('/profileURLs', (req, res) => {
 });
 
 
+app.put('/profileURLs', (req, res) => {
+    var username = req.query.username;
+    var url = req.query.profileURL;
+
+    User.findOneAndUpdate({ 'username': username }, { $set: { 'pictureURL': url } }, (err, docs) => {
+        res.send('success');
+    });
+});
 
 // list of all messages
 // a message contains a user and the text
