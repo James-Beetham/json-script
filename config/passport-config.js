@@ -68,6 +68,7 @@ var registerStrategy = new LocalStrategy({
 
 		user.username = username;
 		user.password = User.hashPassword(password);
+		user.pictureURL = "genericprofile.png";
 
 		user.save(function(err) {
 			if(err){throw err;}

@@ -1,25 +1,25 @@
 var express = require('express');
-var app     = express();
-var path    = require("path");
-var server  = require('http').Server(app);
-var io      = require('socket.io')(server);
-var flash   = require("connect-flash");
-var morgan  = require("morgan");
+var app = express();
+var path = require("path");
+var server = require('http').Server(app);
+var io = require('socket.io')(server);
+var flash = require("connect-flash");
+var morgan = require("morgan");
 var session = require("express-session");
-var mongoose     = require("mongoose");
-var passport     = require("passport");
+var mongoose = require("mongoose");
+var passport = require("passport");
 var cookieParser = require("cookie-parser");
 var bodyParser = require("body-parser");
 var User = require("./model/user-model.js");
 
 
-mongoose.connect("mongodb+srv://admin_1:password_1@livechatdb-f6agq.mongodb.net/test", {useNewUrlParser: true});
+mongoose.connect("mongodb+srv://admin_1:password_1@livechatdb-f6agq.mongodb.net/test", { useNewUrlParser: true });
 mongoose.set('useCreateIndex', true);
 
 app.set("view engine", "ejs");
 app.use(express.static('templates'));
 app.use(express.static('static'));
-app.use(bodyParser.urlencoded({extended: true}));
+app.use(bodyParser.urlencoded({ extended: true }));
 app.use(bodyParser.json());
 app.use(cookieParser("secretkey"));
 app.use(morgan("dev"));
@@ -45,15 +45,15 @@ var authRouter = require("./router/authentication-router");
 app.use("/a", authRouter);
 
 app.get('/', (req, res) => {
-    res.sendFile(__dirname + '/templates/chatpage.html');
+    res.redirect("/a/login");
 });
 
-app.get("/chat", (req, res)=>{
-    if(!req.isAuthenticated()){
-        return res.redirect("/a/login");
+app.get("/chat", (req, res) => {
+    if (!req.isAuthenticated()) {
+        res.redirect("/a/login");
+    } else {
+        res.sendFile(path.resolve(__dirname, "./templates/chatpage.html"));
     }
-
-    return res.sendFile(path.resolve(__dirname, "./templates/chatpage.html"));
 });
 
 /*app.get(/^\/login$|^\/register$/, (req, res)=>{
@@ -111,18 +111,18 @@ io.on('connection', (socket) => {
         // console.log(payload.message.match(/\/w/));
         // console.log(payload.message.match(/\/w (\w+) \w+/));
 
-        if(payload.message.match(/\/w/)){
+        if (payload.message.match(/\/w/)) {
             var targetUser = payload.message.match(/\/w +(\w+)/)[1];
-            var message    = payload.message.match(/\/w +\w+ (.*)/)[1];
+            var message = payload.message.match(/\/w +\w+ (.*)/)[1];
             // console.log("target is: " + connectedUsers.get(targetUser));
 
-            for(const userSocket of connectedSockets){
-                if(userSocket.username == targetUser){
+            for (const userSocket of connectedSockets) {
+                if (userSocket.username == targetUser) {
                     // A new payload is created to avoid mutation.
                     var newPayload = {
-                        username : payload.username,
-                        message  : "** " + message + " **",
-                        type     : "message"
+                        username: payload.username,
+                        message: "** " + message + " **",
+                        type: "message"
                     };
 
                     socket.emit("chat-msg", newPayload);
@@ -155,7 +155,7 @@ io.on('connection', (socket) => {
         // The username is used to identify the user.
         var userSocket = {
             username: user,
-            socket  : socket
+            socket: socket
         };
         connectedSockets.push(userSocket);
 
@@ -177,10 +177,9 @@ io.on('connection', (socket) => {
         connectedUsers.delete(user); // delete this user from set
 
         // Remove the connectedSocket object.
-        for(var i= 0; i < connectedSockets.length; i++ ){
-            if(connectedSockets[i] != null 
-                && connectedSockets[i].username == user)
-            {
+        for (var i = 0; i < connectedSockets.length; i++) {
+            if (connectedSockets[i] != null
+                && connectedSockets[i].username == user) {
                 delete connectedSockets[i];
             }
         }
