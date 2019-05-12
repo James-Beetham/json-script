@@ -1,18 +1,18 @@
 var express = require('express');
-var app     = express();
-var path    = require("path");
-var server  = require('http').Server(app);
-var io      = require('socket.io')(server);
-var flash   = require("connect-flash");
-var morgan  = require("morgan");
+var app = express();
+var path = require("path");
+var server = require('http').Server(app);
+var io = require('socket.io')(server);
+var flash = require("connect-flash");
+var morgan = require("morgan");
 var session = require("express-session");
-var mongoose     = require("mongoose");
-var passport     = require("passport");
+var mongoose = require("mongoose");
+var passport = require("passport");
 var cookieParser = require("cookie-parser");
-var bodyParser   = require("body-parser");
+var bodyParser = require("body-parser");
 
 
-mongoose.connect("mongodb+srv://admin_1:password_1@livechatdb-f6agq.mongodb.net/test", {useNewUrlParser: true}).catch((error) => {
+mongoose.connect("mongodb+srv://admin_1:password_1@livechatdb-f6agq.mongodb.net/test", { useNewUrlParser: true }).catch((error) => {
     console.log(error);
 });
 mongoose.set('useCreateIndex', true);
@@ -20,7 +20,7 @@ mongoose.set('useCreateIndex', true);
 app.set("view engine", "ejs");
 app.use(express.static('templates'));
 app.use(express.static('static'));
-app.use(bodyParser.urlencoded({extended: true}));
+app.use(bodyParser.urlencoded({ extended: true }));
 app.use(bodyParser.json());
 app.use(cookieParser("secretkey"));
 app.use(morgan("dev"));
@@ -46,15 +46,15 @@ var authRouter = require("./router/authentication-router");
 app.use("/a", authRouter);
 
 app.get('/', (req, res) => {
-    if(!req.isAuthenticated()){
+    if (!req.isAuthenticated()) {
         return res.redirect("/a/login");
     }
 
     return res.sendFile(path.resolve(__dirname, "./templates/chatpage.html"));
 });
 
-app.get("/chat", (req, res)=>{
-    if(!req.isAuthenticated()){
+app.get("/chat", (req, res) => {
+    if (!req.isAuthenticated()) {
         return res.redirect("/a/login");
     }
 
@@ -97,23 +97,19 @@ io.on('connection', (socket) => {
     // when a new chat message is received
     // store it and emit it to all users
     socket.on('chat-msg', (payload) => {
-        allMessages.push(payload);
-        // console.log(payload.message);
-        // console.log(payload.message.match(/\/w/));
-        // console.log(payload.message.match(/\/w (\w+) \w+/));
 
-        if(payload.message.match(/\/w/)){
+        if (payload.message.match(/\/w/)) {
             var targetUser = payload.message.match(/\/w +(\w+)/)[1];
-            var message    = payload.message.match(/\/w +\w+ (.*)/)[1];
+            var message = payload.message.match(/\/w +\w+ (.*)/)[1];
             // console.log("target is: " + connectedUsers.get(targetUser));
 
-            for(const userSocket of connectedSockets){
-                if(userSocket.username == targetUser){
+            for (const userSocket of connectedSockets) {
+                if (userSocket.username == targetUser) {
                     // A new payload is created to avoid mutation.
                     var newPayload = {
-                        username : payload.username,
-                        message  : "** " + message + " **",
-                        type     : "message"
+                        username: payload.username,
+                        message: "** " + message + " **",
+                        type: "message"
                     };
 
                     socket.emit("chat-msg", newPayload);
@@ -121,6 +117,11 @@ io.on('connection', (socket) => {
                 }
             }
             return;
+        }
+
+        // only save the message if not a whisper
+        else {
+            allMessages.push(payload);
         }
 
         io.emit('chat-msg', payload);
@@ -146,7 +147,7 @@ io.on('connection', (socket) => {
         // The username is used to identify the user.
         var userSocket = {
             username: user,
-            socket  : socket
+            socket: socket
         };
         connectedSockets.push(userSocket);
 
@@ -168,10 +169,9 @@ io.on('connection', (socket) => {
         connectedUsers.delete(user); // delete this user from set
 
         // Remove the connectedSocket object.
-        for(var i= 0; i < connectedSockets.length; i++ ){
-            if(connectedSockets[i] != null 
-                && connectedSockets[i].username == user)
-            {
+        for (var i = 0; i < connectedSockets.length; i++) {
+            if (connectedSockets[i] != null
+                && connectedSockets[i].username == user) {
                 delete connectedSockets[i];
             }
         }
