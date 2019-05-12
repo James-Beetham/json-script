@@ -33,7 +33,6 @@ var loginStrategy = new LocalStrategy({
 	});
 });
 
-passport.use("login", loginStrategy);
 
 var registerStrategy = new LocalStrategy({
 	usernameField: "username", 
@@ -63,6 +62,7 @@ var registerStrategy = new LocalStrategy({
 
 		user.username = username;
 		user.password = User.hashPassword(password);
+		user.pictureURL = 'static/genericprofile.png';
 
 		user.save(function(err) {
 			if(err){throw err;}
@@ -72,4 +72,5 @@ var registerStrategy = new LocalStrategy({
 	});
 });
 
+passport.use("login", loginStrategy);
 passport.use("register", registerStrategy);
