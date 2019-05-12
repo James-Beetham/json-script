@@ -20,6 +20,9 @@ body {
     overflow-x: hidden;
 }
 
+h2 {
+    margin-bottom: 10px;
+}
 
 
 /* classes */
@@ -119,12 +122,12 @@ body {
 }
 
 
-#online-users-col {
+#chat-left-col {
     text-align: center;
     border-right: 1px solid white;
 }
 
-#chat-col {
+#chat-right-col {
     overflow: auto;
     text-align: center;
 }
@@ -135,4 +138,8 @@ body {
 
 #login-submit {
     margin-top: 10px;
+}
+
+#settings-div {
+    margin-bottom: 50px;
 }

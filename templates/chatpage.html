@@ -46,19 +46,33 @@
 
 
         <!-- left col for online users -->
-        <div id="online-users-col" class="col-md-4">
-            <h2 style="margin-bottom: 10px;">Online Users</h2>
-            <div id="users-list"></div>
+        <div id="chat-left-col" class="col-md-4">
 
-            <br/>
-            <br/>
-            <button type="button" class="btn btn-danger" onclick="logout()">Logout</button>
+
+            <div id="settings-div">
+                <h2>Settings</h2>
+
+                <div class="input-group mb-3" style="width: 70%; margin: auto;">
+                    <input type="text" class="form-control" placeholder="Profile Image URL">
+                    <div class="input-group-append">
+                        <button class="btn btn-outline-secondary" type="button">Update Profile Picture</button>
+                    </div>
+                </div>
+                <button type="button" class="btn btn-danger" onclick="logout()">Logout</button>
+            </div>
+
+
+            <div id="online-users-div">
+                <h2>Online Users</h2>
+                <div id="users-list"></div>
+            </div>
+
         </div>
 
         <!-- right col for chat -->
-        <div id="chat-col" class="col-md-8">
+        <div id="chat-right-col" class="col-md-8">
 
-            <h2 style="margin-bottom: 10px;">Global Chat Messages</h2>
+            <h2>Global Chat Messages</h2>
 
             <div id="messages" style="overflow: auto; height: 80vh;"></div>
 
