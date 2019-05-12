@@ -1,1 +1,4 @@
-programmerschat
+- To use our chat, please visit: https://nameless-springs-76753.herokuapp.com/chat
+- To whisper a user, either click their name in the “Online Users” section to auto fill or simply type: /w <user’s name> <your message>
+- To test with two different accounts, you MUST use two different browsers. - Otherwise, you will be logged into the same account just on a different tab.
+- To add a picture to your profile, simply find any picture/gif that you want, right click > copy image address > paste into profile image URL box and then click the Update Profile Picture button.
