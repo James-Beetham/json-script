@@ -211,7 +211,6 @@ io.on('connection', (socket) => {
 
 function removeConnectedUser(arr, username) {
     connectedSockets = arr.filter(function(sock){
-        console.log(sock.username);
         return sock.username !== username;
     });
  }
