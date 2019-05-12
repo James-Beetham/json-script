@@ -246,6 +246,9 @@ function logout() {
 function updateProfilePicture() {
     var url = document.getElementById('profile-img-input').value;
 
+    if(url == '')
+        return;
+
     $.ajax({
         url: `/profileURLs?username=${username}&profileURL=${url}`,
         type: 'put',

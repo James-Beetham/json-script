@@ -45,10 +45,10 @@ var authRouter = require("./router/authentication-router");
 app.use("/a", authRouter);
 
 app.get('/', (req, res) => {
-    if(req.isAuthenticated()){
+    if (req.isAuthenticated()) {
         return res.sendFile(
             path.resolve(__dirname, "./templates/chatpage.html"));
-    }else{
+    } else {
         return res.redirect("/a/login");
     }
 });
@@ -119,7 +119,6 @@ io.on('connection', (socket) => {
     // when a new chat message is received
     // store it and emit it to all users
     socket.on('chat-msg', (payload) => {
-        allMessages.push(payload);
         // console.log(payload.message);
         // console.log(payload.message.match(/\/w/));
         // console.log(payload.message.match(/\/w (\w+) \w+/));
@@ -129,7 +128,7 @@ io.on('connection', (socket) => {
             var message = payload.message.match(/\/w +\w+ (.*)/)[1];
             // console.log("target is: " + connectedUsers.get(targetUser));
 
-            if(targetUser == payload.username){
+            if (targetUser == payload.username) {
                 return;
             }
 
@@ -147,6 +146,8 @@ io.on('connection', (socket) => {
                 }
             }
             return;
+        } else {
+            allMessages.push(payload);
         }
 
         io.emit('chat-msg', payload);
