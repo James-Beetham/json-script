@@ -195,12 +195,7 @@ io.on('connection', (socket) => {
         connectedUsers.delete(user); // delete this user from set
 
         // Remove the connectedSocket object.
-        for (var i = 0; i < connectedSockets.length; i++) {
-            if (connectedSockets[i] != null
-                && connectedSockets[i].username == user) {
-                delete connectedSockets[i];
-            }
-        }
+        arrayRemove(connectedSockets, user)
 
         socket.broadcast.emit('user-offline', user); // broadcast that the user left
 
@@ -213,6 +208,13 @@ io.on('connection', (socket) => {
         io.emit('chat-msg', msg); // emit disconnection message
     })
 });
+
+function arrayRemove(arr, value) {
+    return arr.filter(function(ele){
+        return ele != value;
+    });
+ }
+ 
 
 // listen on port 8000
 server.listen(process.env.PORT || 8000, () => {
