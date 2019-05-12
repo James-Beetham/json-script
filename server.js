@@ -124,6 +124,10 @@ io.on('connection', (socket) => {
             var message = payload.message.match(/\/w +\w+ (.*)/)[1];
             // console.log("target is: " + connectedUsers.get(targetUser));
 
+            if(targetUser == payload.username){
+                return;
+            }
+
             for (const userSocket of connectedSockets) {
                 if (userSocket.username == targetUser) {
                     // A new payload is created to avoid mutation.
