@@ -45,7 +45,12 @@ var authRouter = require("./router/authentication-router");
 app.use("/a", authRouter);
 
 app.get('/', (req, res) => {
-    res.redirect("/a/login");
+    if(req.isAuthenticated()){
+        return res.sendFile(
+            path.resolve(__dirname, "./templates/chatpage.html"));
+    }else{
+        return res.redirect("/a/login");
+    }
 });
 
 app.get("/chat", (req, res) => {
