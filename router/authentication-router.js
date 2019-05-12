@@ -16,13 +16,20 @@ var registerMiddleware = passport.authenticate("register", {
 
 router.get("/login", (req, res)=>{
 	var loginMessage = req.flash("loginMessage");
-	console.log(loginMessage);
-    res.render("login"); 
+
+    if(req.isAuthenticated()){
+        return res.render("login", {
+            "loginMessage": "You're already logged in"
+        });
+    }
+
+    return res.render("login", {
+        loginMessage: loginMessage
+    }); 
 });
 
 
 router.post("/login", loginMiddleware, (req, res)=>{
-	console.log("-"+ req.body.username + "-" );
 
     // Success redirect:
     req.session.username = req.body.username;
@@ -35,9 +42,14 @@ router.post("/login", loginMiddleware, (req, res)=>{
 });
 
 router.get("/register", (req, res)=>{
+    if(req.isAuthenticated()){
+        res.redirect("/chat");
+    }
+
 	var registerMessage = req.flash("registerMessage");
-	console.log(registerMessage);
-    res.render("register"); 
+    res.render("register", {
+        registerMessage: registerMessage
+    }); 
 });
 
 router.post("/register", registerMiddleware, (req, res)=>{

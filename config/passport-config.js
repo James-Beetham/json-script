@@ -23,16 +23,22 @@ var loginStrategy = new LocalStrategy({
 			return done(err, null);
 		}
 
-		if(!user || !user.verifyPassword(password)){
+		if(!user){
+			return done(null, false, 
+				req.flash("loginMessage", "Username doesn't exist"));
+		}
+
+		if(!user.verifyPassword(password)){
 			console.log("Wrong password");
 			return done(null, false, 
-				req.flash("loginMessage", "Wrong email/password combination"));
+				req.flash("loginMessage", "Wrong password"));
 		}
 		console.log("Logged in");
 		return done(null, user);
 	});
 });
 
+passport.use("login", loginStrategy);
 
 var registerStrategy = new LocalStrategy({
 	usernameField: "username", 
@@ -62,7 +68,6 @@ var registerStrategy = new LocalStrategy({
 
 		user.username = username;
 		user.password = User.hashPassword(password);
-		user.pictureURL = 'static/genericprofile.png';
 
 		user.save(function(err) {
 			if(err){throw err;}
@@ -72,5 +77,4 @@ var registerStrategy = new LocalStrategy({
 	});
 });
 
-passport.use("login", loginStrategy);
 passport.use("register", registerStrategy);
