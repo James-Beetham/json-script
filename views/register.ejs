@@ -44,6 +44,10 @@
             <br />
             <br />
             <a href="/a/login" style="color:black;">Login with your account</a>
+
+            <% if(registerMessage != null){ %>
+                <p style="color:red;"><%= registerMessage %></p>
+            <% } %>
         </form>
 
     </div>
