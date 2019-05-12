@@ -7,8 +7,12 @@ var showNewMessages = false;
 
 var msgIndex = 0;
 
+var usernameToImgURL;
+
 $(function () {
     username = document.cookie.match(/username=s%3A(.*)\./)[1];
+
+    getProfilePictures();
 
     // tell the server a new user connected
     socket.emit('user-connect', username);
@@ -17,7 +21,7 @@ $(function () {
     // so we know which css class to add to the messages
     displayCachedMessages();
 
-    $("#modal-guide").modal({keyboard: true, show:true});
+    $("#modal-guide").modal({ keyboard: true, show: true });
 
     // send message on submit form
     $('#chat-form').submit((e) => {
@@ -74,18 +78,27 @@ $(function () {
 
 
     function displayCachedMessages() {
-        // get all the previous cached messages, and display
+        // get all profile image urls
         $.get(
-            '/previousMessages',
-            (messages) => {
-                messages.forEach(msg => {
-                    appendMessage(msg);
-                });
+            '/profileURLs',
+            (map) => {
+                usernameToImgURL = map;
 
-                // to prevent duplicates
-                showNewMessages = true;
+                // get all the previous cached messages, and display
+                $.get(
+                    '/previousMessages',
+                    (messages) => {
+                        messages.forEach(msg => {
+                            appendMessage(msg);
+                        });
+
+                        // to prevent duplicates
+                        showNewMessages = true;
+                    }
+                )
             }
         )
+
     }
 
 
@@ -95,10 +108,9 @@ $(function () {
         '/getOnlineUsers',
         (usernames) => {
             usernames.forEach((user) => {
-                console.log("getOnlineUsers");
-                if(username == user){
+                if (username == user) {
                     return;
-                }else{
+                } else {
                     addOnlineUser(user);
                 }
             });
@@ -106,6 +118,7 @@ $(function () {
     );
 
 });
+
 
 
 //////////////////////
@@ -132,7 +145,6 @@ socket.on('stopped-typing', (username) => {
 // when user connects
 // and add them to online users message
 socket.on('user-online', (username) => {
-    console.log("on user-online");
     addOnlineUser(username);
 });
 
@@ -170,14 +182,13 @@ function appendMessage(messageObj) {
     }
 
     $('#messages').append(html);
-    document.getElementById(`msg${msgIndex}`).scrollIntoView();
+    document.getElementById(`msg${msgIndex}`).scrollIntoView(); // make sure newest message is visible
 
     msgIndex++;
 }
 
 // displays a user as online
 function addOnlineUser(username) {
-    console.log("Adding user: " + username);
     $('#users-list').append(buildOnlineUserElement(username));
 }
 
@@ -189,7 +200,7 @@ function buildOnlineUserElement(username) {
             </div>`;
 }
 
-function sendWhisper(targetUser){
+function sendWhisper(targetUser) {
     $("#chatbox").val("/w " + targetUser + " ");
     $("#chatbox").focus();
 }

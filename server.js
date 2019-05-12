@@ -10,6 +10,7 @@ var mongoose = require("mongoose");
 var passport = require("passport");
 var cookieParser = require("cookie-parser");
 var bodyParser = require("body-parser");
+var User = require("./model/user-model.js");
 
 
 mongoose.connect("mongodb+srv://admin_1:password_1@livechatdb-f6agq.mongodb.net/test", { useNewUrlParser: true }).catch((error) => {
@@ -71,12 +72,6 @@ app.get("/chat", (req, res) => {
 });*/
 
 
-// return true if username not taken
-app.get('/isUserValid', (req, res) => {
-    var username = req.query.username;
-    res.send(!connectedUsers.has(username));
-});
-
 app.get('/getOnlineUsers', (req, res) => {
     res.send(Array.from(connectedUsers));
 });
@@ -84,6 +79,26 @@ app.get('/getOnlineUsers', (req, res) => {
 app.get('/previousMessages', (req, res) => {
     res.send(allMessages);
 });
+
+// returns dictionary mapping username of users to their profile image URL
+app.get('/profileURLs', (req, res) => {
+    var map = {};
+
+    User.find({}, 'username pictureURL', (err, docs) => {
+
+        // for each document, add their profile img to the map
+        docs.forEach((doc) => {
+            var user = doc.username;
+            var url = doc.pictureURL;
+
+            map[user] = url;
+        });
+
+        res.send(map);
+    });
+});
+
+
 
 // list of all messages
 // a message contains a user and the text
