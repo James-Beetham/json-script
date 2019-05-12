@@ -12,8 +12,6 @@ var usernameToImgURL;
 $(function () {
     username = document.cookie.match(/username=s%3A(.*)\./)[1];
 
-    getProfilePictures();
-
     // tell the server a new user connected
     socket.emit('user-connect', username);
 
