@@ -5,6 +5,8 @@ var socket = io();
 
 var showNewMessages = false;
 
+var msgIndex = 0;
+
 $(function () {
     username = document.cookie.match(/username=s%3A(.*)\./)[1];
 
@@ -154,7 +156,7 @@ function appendMessage(messageObj) {
         var msgClass = (username == messageObj['username']) ? 'user-msg' : 'other-msg';
 
         html =
-            `<div class="msg ${msgClass}">
+            `<div id="msg${msgIndex}" class="msg ${msgClass}">
                 <div><strong>${messageObj['username']}</strong></div>
                 <div>${messageObj['message']}</div>
             </div>`;
@@ -162,12 +164,15 @@ function appendMessage(messageObj) {
     // its an info message
     else if (messageObj['type'] === 'info') {
         html =
-            `<div class="msg info-msg">
+            `<div id="msg${msgIndex}" class="msg info-msg">
                 <div>${messageObj['message']}</div>
             </div>`;
     }
 
     $('#messages').append(html);
+    document.getElementById(`msg${msgIndex}`).scrollIntoView();
+
+    msgIndex++;
 }
 
 // displays a user as online
