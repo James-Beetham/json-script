@@ -195,7 +195,7 @@ io.on('connection', (socket) => {
         connectedUsers.delete(user); // delete this user from set
 
         // Remove the connectedSocket object.
-        arrayRemove(connectedSockets, user)
+        removeConnectedUser(connectedSockets, user);
 
         socket.broadcast.emit('user-offline', user); // broadcast that the user left
 
@@ -209,9 +209,10 @@ io.on('connection', (socket) => {
     })
 });
 
-function arrayRemove(arr, value) {
-    return arr.filter(function(ele){
-        return ele != value;
+function removeConnectedUser(arr, username) {
+    connectedSockets = arr.filter(function(sock){
+        console.log(sock.username);
+        return sock.username !== username;
     });
  }
  
