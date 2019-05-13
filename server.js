@@ -180,7 +180,7 @@ io.on('connection', (socket) => {
             console.log("chat clear");
             var cookie = socket.handshake.headers.cookie;
             if(cookie.match(/username=s%3Aadmin/)){
-                socket.emit("clear-chat");
+                io.emit("clear-chat");
                 io.emit("chat-msg", {
                     "message": "Chat has been cleared by admin",
                     "type": "info"
