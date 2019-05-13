@@ -24,11 +24,12 @@
 
             <div id="settings-div">
                 <h2>Settings</h2>
- 
+
                 <div class="input-group mb-3" style="width: 70%; margin: auto;">
                     <input type="text" class="form-control" placeholder="Image URL" id="profile-img-input">
                     <div class="input-group-append">
-                        <button class="btn btn-outline-secondary" type="button" onclick="updateProfilePicture()">Update Profile Picture</button>
+                        <button class="btn btn-outline-secondary" type="button" onclick="updateProfilePicture()">Update
+                            Profile Picture</button>
                     </div>
                 </div>
                 <button type="button" class="btn btn-danger" onclick="logout()">Logout</button>
@@ -37,14 +38,19 @@
             <div>
                 <h2>Tips and tricks</h2>
 
-                <div><strong>To whisper to another user (private message)</strong></div>
+                <div><strong>To whisper to another user (private message):</strong></div>
                 <ul style="padding-top: 4px;">
                     <li>Type /w &lt;username&gt; &lt;message&gt;</li>
-                    <li>or just click on their name in the connected users box!</li>
+                    <li>Otherwise, click on their name in the Online Users box.</li>
+                </ul>
+                <div><strong>For Admins to clear chat: </strong></div>
+                <ul style="padding-top: 4px;">
+                    <li>Type the command /clear</li>
+                    <li>Will only work for admin accounts!</li>
                 </ul>
             </div>
 
-            <br/>
+            <br />
 
             <div id="online-users-div">
                 <h2>Online Users</h2>
