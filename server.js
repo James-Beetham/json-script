@@ -157,7 +157,7 @@ io.on('connection', (socket) => {
                 var tree = coreJS.parseExpr(coreJS.rules, msg);
                 if (mode != 1 && mode != -1) {
                     env.data = {};
-                    coreJS.parseTree(env, coreJS.flatten(tree));
+                    coreJS.parseTree(env, tree);
                     msg = JSON.stringify(env.data);
                     if (mode == -1) {
                         socket.emit("chat-msg", {username: payload.username, message: "**silent** " + msg, type: "message"});
@@ -165,9 +165,9 @@ io.on('connection', (socket) => {
                     } else payload.message = msg;
                 } else {
                     if (mode == -1) {
-                        socket.emit("chat-msg", {username: payload.username, message: "**silent** " + JSON.stringify(coreJS.flatten(tree)), type: "message"});
+                        socket.emit("chat-msg", {username: payload.username, message: "**silent** " + JSON.stringify(tree), type: "message"});
                         return;
-                    } else payload.message = JSON.stringify(coreJS.flatten(tree));
+                    } else payload.message = JSON.stringify(tree);
                 }
             } catch (e) {
                 if (mode >= 0) socket.emit("chat-msg", {username: payload.username, message: "error: " + (typeof(e) == "string" ? e : e.message), type: "message"});

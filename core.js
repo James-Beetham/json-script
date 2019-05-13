@@ -219,7 +219,7 @@ var a = 1 + 2 * 3 + 4
 */
 
 // returns {root, cur, str}
-function parseExpr(rules, str, root, cur) {
+function parseExpr2(rules, str, root, cur) {
     // node: {k: keyword, c: children, p: parent, i: priority, l: length}
     // check if root is empty
         // get first keyword 
@@ -365,7 +365,7 @@ function parseExpr(rules, str, root, cur) {
 
 
 // TODO parse all keywords of same priority together
-function parseExpr2(rules, str, i = rules.length - 1, stack = []) { // TODO (working on it)
+function parseExpr(rules, str, i = rules.length - 1) { // TODO (working on it)
     if (str.length == 0) return "";
     if (i == -1) return str;
     if (i >= rules.length) return str;
@@ -639,7 +639,7 @@ var tests = function() {
     };
 
     var testList = [
-        // {s: "var a = 1 + 2", e: {a: 3}},
+        {s: "var a = 1 + 2", e: {a: 3}},
         // {s: "var a=1", e: {a: 1}},
         // {s: "var a = 1 + 3 - 5", e: {a: -1}},
         // {s: "var a = 1 + 1 - 2 + 1", e: {a: 1}},
@@ -649,7 +649,7 @@ var tests = function() {
         // {s: "var a = 1 var b = 2 var c = 3", e: {a: 1, b: 2, c: 3}},
         // {s: "var a=1 var b=2 var c=3", e: {a: 1, b: 2, c: 3}},
         // {s: "vara=1;var b=2;varc=3", e: {vara: 1, b: 2, varc: 3}},
-        {s: "var a = 3 - (4 + 1)", e: {a: -2}},
+        // {s: "var a = 3 - (4 + 1)", e: {a: -2}},
         
     ];
     var count = {passed: 0, failed: 0};
