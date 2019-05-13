@@ -128,6 +128,10 @@ socket.on('chat-msg', (payload) => {
         appendMessage(payload);
 });
 
+socket.on("clear-chat", ()=>{
+    $(".msg").remove();
+    console.log("chat clear");
+});
 
 // when someone starts typing, add a typing msg to list
 socket.on('is-typing', (username) => {

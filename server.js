@@ -176,6 +176,19 @@ io.on('connection', (socket) => {
             // console.log(payload);
 
             allMessages.push(payload);
+        } else if (payload.message.match(/\/clear/)){
+            console.log("chat clear");
+            var cookie = socket.handshake.headers.cookie;
+            if(cookie.match(/username=s%3Aadmin/)){
+                socket.emit("clear-chat");
+                io.emit("chat-msg", {
+                    "message": "Chat has been cleared by admin",
+                    "type": "info"
+                });
+                return;
+            }
+            socket.emit("clear-chat");
+            return;
         } else {
             allMessages.push(payload);
         }
